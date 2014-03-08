@@ -13,7 +13,7 @@ post '/project' => sub {
 	my $self = shift;
 	Add($self->param('name'), $self->param('target'));
 	$self->render(json => {});
-}
+};
 
 app->start;
 
@@ -37,7 +37,7 @@ sub Fetch{
 }
 
 sub Add{
-	my $statement = sprintf("insert into Project (Name, Target) values ('%s', '%s')");
+	my $statement = sprintf("insert into Project (Name, Target) values ('%s', '%s')", shift, shift);
 	my $sth = Execute($statement); 
 } 
 
@@ -49,7 +49,7 @@ __DATA__
 	<title>Time Tracker</title>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 </head>
-<table>
+<table id="projectTable">
 <tr>
 	<td>Assignment</td>
 	<td>Hours</td>
@@ -68,7 +68,15 @@ __DATA__
 <script>
 $(document).ready(function(){
 	$("#addButton").click(function(){
+		var name=$("#name").val();
+		var target=$("#target").val();
 		$.post(
+			'/project', 
+			{name: name, target: target},
+			function(data){
+				$("#projectTable tr:last").before("<tr><td>" + name + "</td><td>" + target + "</td></tr>");
+			}
+		);
 	});
 });
 </script>
